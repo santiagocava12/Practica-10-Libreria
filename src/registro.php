@@ -1,12 +1,11 @@
 <?php
-// Incluimos la conexión a la base de datos (db_connection.php)
+// Incluimos la conexión a la base de datos (db_connection.php).
+// Esto es lógica PHP pura, no genera HTML.
 include 'db_connection.php'; 
-// Incluimos la barra de navegación (navbar.php)
-include 'navbar.php'; 
 
 $message = ''; // Variable para almacenar mensajes de éxito/error
 
-// Lógica PHP: Se ejecuta solo cuando el formulario es enviado (método POST)
+// Lógica PHP: Procesamiento del formulario
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $autor = $_POST['autor'];
     $titulo = $_POST['titulo'];
@@ -19,19 +18,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $imagen_data = file_get_contents($_FILES['portada']['tmp_name']);
     }
 
-    // 2. Preparar la consulta SQL para inserción
+    // 2. Preparar la consulta SQL
     $sql = "INSERT INTO libros (autor, titulo, fecha_publicacion, imagen_portada) 
             VALUES (:autor, :titulo, :fecha, :portada)";
     
     try {
         $stmt = $pdo->prepare($sql);
-        // Bind de parámetros normales
         $stmt->bindParam(':autor', $autor);
         $stmt->bindParam(':titulo', $titulo);
         $stmt->bindParam(':fecha', $fecha);
         
-        // Bind del parámetro binario (BYTEA/BLOB)
-        // PDO::PARAM_LOB (Large OBject) es esencial para manejar archivos binarios grandes.
+        // PDO::PARAM_LOB es esencial para manejar el dato binario (BYTEA/BLOB)
         $stmt->bindParam(':portada', $imagen_data, PDO::PARAM_LOB); 
         
         $stmt->execute();
@@ -51,7 +48,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
 
-<?php include 'navbar.php'; // HTML de la barra de navegación ?>
+<?php 
+// 👈 INCLUSIÓN ÚNICA Y CORRECTA: Solo se incluye el HTML de la navbar una vez aquí
+include 'navbar.php'; 
+?>
 
 <div class="container mt-5">
     <h2>Registro de Nuevo Libro</h2>
