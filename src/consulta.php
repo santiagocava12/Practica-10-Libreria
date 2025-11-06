@@ -1,14 +1,14 @@
 <?php
-include 'db_connection.php'; // Incluye la conexión a la base de datos
+include 'db_connection.php'; 
 
-// Lógica PHP para consultar y obtener los libros
+
 $sql = "SELECT id, autor, titulo, fecha_publicacion, imagen_portada FROM libros ORDER BY titulo ASC";
 $stmt = $pdo->query($sql);
 $libros = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Función auxiliar para generar la URL de la imagen (PHP)
+
 function get_image_url($id) {
-    // Apunta a nuestro script que sirve la imagen binaria desde la BD
+
     return "serve_image.php?id=" . $id;
 }
 ?>
@@ -22,17 +22,17 @@ function get_image_url($id) {
 </head>
 <body>
 
-<?php include 'navbar.php'; // Incluye la barra de navegación con HTML/Bootstrap ?>
+<?php include 'navbar.php'; ?>
 
 <div class="container mt-5">
     <h2>Libros Registrados</h2>
 
-    <!-- Contenedor para mostrar los libros con Bootstrap Cards --><div class="row row-cols-1 row-cols-md-3 g-4">
+    <div class="row row-cols-1 row-cols-md-3 g-4">
         <?php if (count($libros) > 0): ?>
             <?php foreach ($libros as $libro): ?>
                 <div class="col">
                     <div class="card h-100">
-                        <!-- La imagen se carga a través del script PHP --><img src="<?= get_image_url($libro['id']) ?>" class="card-img-top" alt="Portada de <?= htmlspecialchars($libro['titulo']) ?>" style="height: 300px; object-fit: cover;">
+                        <img src="<?= get_image_url($libro['id']) ?>" class="card-img-top" alt="Portada de <?= htmlspecialchars($libro['titulo']) ?>" style="height: 300px; object-fit: cover;">
                         <div class="card-body">
                             <h5 class="card-title"><?= htmlspecialchars($libro['titulo']) ?></h5>
                             <p class="card-text">

@@ -8,7 +8,7 @@
 </head>
 <body>
 
-<?php include 'navbar.php'; // Aquí se inserta el HTML de la barra de navegación ?>
+<?php include 'navbar.php'; ?>
 
 <div class="container mt-5">
     <div class="p-5 mb-4 bg-light rounded-3">

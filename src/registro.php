@@ -1,42 +1,37 @@
 <?php
-// Incluimos la conexión a la base de datos (db_connection.php).
-// Esto es lógica PHP pura, no genera HTML.
+
 include 'db_connection.php'; 
 
-$message = ''; // Variable para almacenar mensajes de éxito/error
+$message = ''; 
 
-// Lógica PHP: Procesamiento del formulario
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $autor = $_POST['autor'];
     $titulo = $_POST['titulo'];
     $fecha = $_POST['fecha'];
 
-    // 1. Manejo de la imagen para BLOB/BYTEA
     $imagen_data = null;
-    if (isset($_FILES['portada']) && $_FILES['portada']['error'] === UPLOAD_ERR_OK) {
-        // Lee el contenido binario del archivo subido. Esto es el BLOB.
+    if (!empty($_FILES['portada']['tmp_name'])) {
         $imagen_data = file_get_contents($_FILES['portada']['tmp_name']);
     }
 
-    // 2. Preparar la consulta SQL
-    $sql = "INSERT INTO libros (autor, titulo, fecha_publicacion, imagen_portada) 
+    $sql = "INSERT INTO libros (autor, titulo, fecha_publicacion, imagen_portada)
             VALUES (:autor, :titulo, :fecha, :portada)";
-    
+
     try {
         $stmt = $pdo->prepare($sql);
         $stmt->bindParam(':autor', $autor);
         $stmt->bindParam(':titulo', $titulo);
         $stmt->bindParam(':fecha', $fecha);
-        
-        // PDO::PARAM_LOB es esencial para manejar el dato binario (BYTEA/BLOB)
-        $stmt->bindParam(':portada', $imagen_data, PDO::PARAM_LOB); 
-        
+        $stmt->bindParam(':portada', $imagen_data, PDO::PARAM_LOB);
+
         $stmt->execute();
+
         $message = '<div class="alert alert-success mt-3">Libro registrado exitosamente.</div>';
     } catch (PDOException $e) {
         $message = '<div class="alert alert-danger mt-3">Error al registrar: ' . $e->getMessage() . '</div>';
     }
 }
+
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -49,7 +44,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
 
 <?php 
-// 👈 INCLUSIÓN ÚNICA Y CORRECTA: Solo se incluye el HTML de la navbar una vez aquí
 include 'navbar.php'; 
 ?>
 
