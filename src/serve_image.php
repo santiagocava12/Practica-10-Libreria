@@ -1,5 +1,10 @@
 <?php
+// Asegúrate de que SOLO este archivo incluya la conexión.
 include 'db_connection.php'; 
+
+// Las siguientes líneas son CRUCIALES para evitar errores de cabecera:
+ob_clean(); // Limpia cualquier salida de buffer anterior
+header_remove(); // Elimina cualquier cabecera HTTP previa
 
 if (!isset($_GET['id']) || empty($_GET['id'])) {
     header('HTTP/1.0 400 Bad Request');
@@ -16,21 +21,24 @@ try {
     $libro = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($libro && $libro['imagen_portada']) {
-        // Establece la cabecera del tipo de contenido. 
-        // ASUMIMOS que son JPG. Si necesitas PNG/GIF, puedes 
-        // intentar detectar el tipo de imagen o almacenar el mime_type en la BD.
+        // Establecer la cabecera Content-Type
+        // Usamos image/jpeg como estándar, si subiste PNG, podría fallar.
+        // Si necesitas manejar ambos, guarda el tipo MIME en la BD.
         header('Content-Type: image/jpeg'); 
         
-        // La imagen se sirve directamente desde el dato binario
+        // Establece la longitud del contenido
+        header('Content-Length: ' . strlen($libro['imagen_portada']));
+
+        // Sirve la imagen binaria (el dato BYTEA)
         echo $libro['imagen_portada']; 
+        exit; // Termina la ejecución para que no se envíe código HTML residual
     } else {
-        // Si no se encuentra la imagen, envía un 404
         header('HTTP/1.0 404 Not Found');
-        // O podrías servir una imagen de placeholder si lo deseas:
-        // readfile('path/to/placeholder.jpg'); 
+        // Opcional: Podrías redirigir a una imagen de placeholder
     }
 } catch (PDOException $e) {
     header('HTTP/1.0 500 Internal Server Error');
-    echo "Error: " . $e->getMessage();
+    // NO DEBERÍAS mostrar el mensaje de error aquí, podría corromper la imagen
+    // echo "Error: " . $e->getMessage(); 
 }
 ?>
