@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  web: 
+    image: php:8.2-apache 
+    container_name: web_libros
+    ports:
+      - "80:80" 
+    volumes:
+      - ./src:/var/www/html 
+    depends_on:
+      - db_pg 
+
+  db_pg:
+    image: postgres:latest
+    container_name: postgres_libros_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "1234" 
+      POSTGRES_DB: libros_db    
+    ports:
+      - "5432:5432" 
+    volumes:
+      - postgres_data:/var/lib/postgresql
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin_libros
+    restart: always
+    ports:
+      - "8082:80" 
+    depends_on:
+      - db_pg 
+    environment:
+      PGADMIN_DEFAULT_EMAIL: yosoycavazos@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: 1234 
+
+volumes:
+  postgres_data:
